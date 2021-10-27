@@ -1,4 +1,4 @@
-import { EffectCallback, MutableRefObject, useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
 
 /**
  * Declarative hook to call `requestAnimationFrame` every `delay` milliseconds with `callback`.
@@ -6,7 +6,7 @@ import { EffectCallback, MutableRefObject, useEffect, useRef } from 'react';
  * @see Browser API: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
  */
 export function useThrottledRequestAnimationFrame(
-  callback: EffectCallback,
+  callback: () => void,
   delay: number | null,
 ): [MutableRefObject<number | null>, MutableRefObject<number | null>] {
   const intervalRef = useRef<number | null>(null);

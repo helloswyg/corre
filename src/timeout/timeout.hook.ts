@@ -1,4 +1,7 @@
-import { EffectCallback, MutableRefObject, useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
+
+export type UseTimeoutParams = Parameters<typeof useTimeout>;
+export type UseTimeoutReturn = ReturnType<typeof useTimeout>;
 
 /**
  * Use setTimeout with Hooks in a declarative way.
@@ -7,7 +10,7 @@ import { EffectCallback, MutableRefObject, useEffect, useRef } from 'react';
  * @see https://overreacted.io/making-setinterval-declarative-with-react-hooks/
  */
 export function useTimeout(
-  callback: EffectCallback,
+  callback: () => void,
   delay: number | null,
   deps: React.DependencyList = [],
 ): MutableRefObject<number | null> {
@@ -20,7 +23,7 @@ export function useTimeout(
   // will still call your old callback.
   //
   // If you add `callback` to useEffect's deps, it will work fine but the
-  // timeout will be reset.
+  // timeout will be reset. TODO: This could be an option.
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -29,7 +32,7 @@ export function useTimeout(
   // Set up the timeout:
 
   useEffect(() => {
-    if (typeof delay === 'number') {
+    if (typeof delay === 'number' && !isNaN(delay)) {
       timeoutRef.current = window.setTimeout(() => callbackRef.current(), delay);
 
       // Clear timeout if the components is unmounted or the delay changes:
