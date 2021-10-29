@@ -36,9 +36,3 @@ Attribution / Inspiration
 - https://stackoverflow.com/questions/53024496/state-not-updating-when-using-react-state-hook-within-setinterval/59274004#59274004
 - https://gist.github.com/Danziger/336e75b6675223ad805a88c2dfdcfd4a
 - https://stackoverflow.com/a/59274004/3723993
-
-
-TODO
-----
-
-- 
