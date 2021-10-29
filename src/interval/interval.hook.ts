@@ -1,14 +1,15 @@
-import { EffectCallback, MutableRefObject, useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
+
+export type UseIntervalParams = Parameters<typeof useInterval>;
+export type UseIntervalReturn = ReturnType<typeof useInterval>;
 
 /**
  * Use setInterval with Hooks in a declarative way.
- *
- * @see https://stackoverflow.com/a/59274004/3723993
- * @see https://overreacted.io/making-setinterval-declarative-with-react-hooks/
  */
 export function useInterval(
-  callback: EffectCallback,
+  callback: () => void,
   delay: number | null,
+  deps: React.DependencyList = [],
 ): MutableRefObject<number | null> {
   const intervalRef = useRef<number | null>(null);
   const callbackRef = useRef(callback);
@@ -19,7 +20,7 @@ export function useInterval(
   // will still call your old callback.
   //
   // If you add `callback` to useEffect's deps, it will work fine but the
-  // interval will be reset.
+  // interval will be reset. TODO: This could be an option.
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -28,13 +29,20 @@ export function useInterval(
   // Set up the interval:
 
   useEffect(() => {
-    if (typeof delay === 'number') {
+    if (typeof delay === 'number' && !isNaN(delay)) {
       intervalRef.current = window.setInterval(() => callbackRef.current(), delay);
 
       // Clear interval if the components is unmounted or the delay changes:
-      return () => window.clearInterval(intervalRef.current || 0);
+      return () => {
+        window.clearInterval(intervalRef.current || 0);
+
+        intervalRef.current = null;
+      };
     }
-  }, [delay]);
+
+    // The spread element means passed dependencies can't be statically verified (that's fine):
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [delay, ...deps]);
 
   // In case you want to manually clear the interval from the consuming component...:
   return intervalRef;

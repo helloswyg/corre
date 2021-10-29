@@ -1,14 +1,14 @@
-import { EffectCallback, MutableRefObject, useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
+
+export type UseRequestAnimationFrameParams = Parameters<typeof useRequestAnimationFrame>;
+export type UseRequestAnimationFrameReturn = ReturnType<typeof useRequestAnimationFrame>;
 
 /**
  * Use requestAnimationFrame with Hooks in a declarative way.
- *
- * @see https://stackoverflow.com/a/59274004/3723993
- * @see https://overreacted.io/making-setinterval-declarative-with-react-hooks/
  */
 export function useRequestAnimationFrame(
-  callback: EffectCallback,
-  isRunning: boolean,
+  callback: () => void,
+  isRunning: boolean = true,
 ): MutableRefObject<number | null> {
   const rafRef = useRef<number | null>(null);
   const callbackRef = useRef(callback);
@@ -26,6 +26,8 @@ export function useRequestAnimationFrame(
   }, [callback]);
 
   useEffect(() => {
+    if (!isRunning) return;
+
     function tick() {      
       rafRef.current = window.requestAnimationFrame(() => {
         callbackRef.current();
@@ -34,14 +36,14 @@ export function useRequestAnimationFrame(
       });
     }
 
-    if (isRunning) {  
-      tick();
-  
-      // Clear RAF if the components is unmounted or the delay changes:
-      return () => {
-        window.cancelAnimationFrame(rafRef.current || 0);
-      };
-    }
+    tick();
+
+    // Clear RAF if the components is unmounted or the delay changes:
+    return () => {
+      window.cancelAnimationFrame(rafRef.current || 0);
+
+      rafRef.current = null;
+    };
   }, [isRunning]);
 
   // In case you want to manually clear the RAF from the consuming component...:
