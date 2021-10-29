@@ -33,7 +33,11 @@ export function useInterval(
       intervalRef.current = window.setInterval(() => callbackRef.current(), delay);
 
       // Clear interval if the components is unmounted or the delay changes:
-      return () => window.clearInterval(intervalRef.current || 0);
+      return () => {
+        window.clearInterval(intervalRef.current || 0);
+
+        intervalRef.current = null;
+      };
     }
 
     // The spread element means passed dependencies can't be statically verified (that's fine):

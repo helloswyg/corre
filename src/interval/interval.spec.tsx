@@ -2,9 +2,6 @@
 import { useInterval, UseIntervalParams, UseIntervalReturn } from "./interval.hook";
 import { renderHook } from '@testing-library/react-hooks'
 
-jest.useFakeTimers();
-jest.spyOn(window, 'setInterval');
-jest.spyOn(window, 'clearInterval');
 
 // TODO: Create custom matcher as a lib?
 
@@ -17,16 +14,29 @@ function countSetIntervalCalls() {
     ));
 }
 
-function expectIntervalCall(times: number, args: [Function, number]) {
+function expectIntervalCall(times: number, args?: [Function, number]) {
     const calls = countSetIntervalCalls();
 
     expect(calls).toHaveLength(times);
+
+    if (times === 0 || !args) return;
+
     expect(calls[calls.length - 1]).toMatchObject(args);
 }
 
 describe('useInterval()', () => {
     
-    it('runs', () => {
+    beforeEach(() => {
+        jest.useFakeTimers('legacy');
+        jest.spyOn(window, 'setInterval');
+        jest.spyOn(window, 'clearInterval');
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    it('sets and clears the interval', () => {
         const callback = jest.fn();
 
         const { result, rerender } = renderHook<UseIntervalParams, UseIntervalReturn>((args) => {
@@ -59,6 +69,38 @@ describe('useInterval()', () => {
         expect(callback).toHaveBeenCalledTimes(6);
         expectIntervalCall(2, [expect.any(Function), 500]);
         expect(clearInterval).toHaveBeenCalledOnce();
+    });
+   
+    it('doesn\'t do anything if timeout is NaN or not a number', () => {
+        const callback = jest.fn();
+
+        const { result, rerender } = renderHook<UseIntervalParams, UseIntervalReturn>((args) => {
+            return useInterval(...args);
+        }, {
+            initialProps: [
+                callback,
+                NaN,
+            ],
+        });
+        
+        expect(result.current.current).toBeNull();
+        expect(callback).not.toHaveBeenCalled();    
+        expectIntervalCall(0);
+        
+        jest.advanceTimersByTime(1000);
+
+        expect(callback).not.toHaveBeenCalled();    
+        expectIntervalCall(0);
+
+        rerender([callback, '10' as any]);       
+
+        expect(callback).not.toHaveBeenCalled();    
+        expectIntervalCall(0);
+
+        jest.advanceTimersByTime(1000);
+
+        expect(callback).not.toHaveBeenCalled();    
+        expectIntervalCall(0);
     });
     
 });

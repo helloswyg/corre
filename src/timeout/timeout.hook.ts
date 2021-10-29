@@ -36,7 +36,11 @@ export function useTimeout(
       timeoutRef.current = window.setTimeout(() => callbackRef.current(), delay);
 
       // Clear timeout if the components is unmounted or the delay changes:
-      return () => window.clearTimeout(timeoutRef.current || 0);
+      return () => {
+        window.clearTimeout(timeoutRef.current || 0);
+
+        timeoutRef.current = null;
+      };
     }
 
   // The spread element means passed dependencies can't be statically verified (that's fine):

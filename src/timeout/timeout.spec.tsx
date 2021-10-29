@@ -2,9 +2,6 @@
 import { useTimeout, UseTimeoutParams, UseTimeoutReturn } from "./timeout.hook";
 import { renderHook } from '@testing-library/react-hooks'
 
-jest.useFakeTimers();
-jest.spyOn(window, 'setTimeout');
-jest.spyOn(window, 'clearTimeout');
 
 // TODO: Create custom matcher as a lib?
 
@@ -17,16 +14,29 @@ function countSetTimeoutCalls() {
     ));
 }
 
-function expectTimeoutCall(times: number, args: [Function, number]) {
+function expectTimeoutCall(times: number, args?: [Function, number]) {
     const calls = countSetTimeoutCalls();
 
     expect(calls).toHaveLength(times);
+
+    if (times === 0 || !args) return;
+
     expect(calls[calls.length - 1]).toMatchObject(args);
 }
 
 describe('useTimeout()', () => {
     
-    it('runs', () => {
+    beforeEach(() => {
+        jest.useFakeTimers('legacy');
+        jest.spyOn(window, 'setTimeout');
+        jest.spyOn(window, 'clearTimeout');
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+    
+    it('sets and clears the timeout', () => {
         const callback = jest.fn();
 
         const { result, rerender } = renderHook<UseTimeoutParams, UseTimeoutReturn>((args) => {
@@ -59,6 +69,38 @@ describe('useTimeout()', () => {
         expect(callback).toHaveBeenCalledTimes(2);
         expectTimeoutCall(2, [expect.any(Function), 500]);
         expect(clearTimeout).toHaveBeenCalledOnce();
+    });
+   
+    it('doesn\'t do anything if timeout is NaN or not a number', () => {
+        const callback = jest.fn();
+
+        const { result, rerender } = renderHook<UseTimeoutParams, UseTimeoutReturn>((args) => {
+            return useTimeout(...args);
+        }, {
+            initialProps: [
+                callback,
+                NaN,
+            ],
+        });
+        
+        expect(result.current.current).toBeNull();
+        expect(callback).not.toHaveBeenCalled();    
+        expectTimeoutCall(0);
+        
+        jest.advanceTimersByTime(1000);
+
+        expect(callback).not.toHaveBeenCalled();    
+        expectTimeoutCall(0);
+
+        rerender([callback, '10' as any]);       
+
+        expect(callback).not.toHaveBeenCalled();    
+        expectTimeoutCall(0);
+
+        jest.advanceTimersByTime(1000);
+
+        expect(callback).not.toHaveBeenCalled();    
+        expectTimeoutCall(0);
     });
     
 });

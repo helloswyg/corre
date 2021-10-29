@@ -8,7 +8,7 @@ export type UseRequestAnimationFrameReturn = ReturnType<typeof useRequestAnimati
  */
 export function useRequestAnimationFrame(
   callback: () => void,
-  isRunning: boolean,
+  isRunning: boolean = true,
 ): MutableRefObject<number | null> {
   const rafRef = useRef<number | null>(null);
   const callbackRef = useRef(callback);
@@ -41,6 +41,8 @@ export function useRequestAnimationFrame(
     // Clear RAF if the components is unmounted or the delay changes:
     return () => {
       window.cancelAnimationFrame(rafRef.current || 0);
+
+      rafRef.current = null;
     };
   }, [isRunning]);
 
