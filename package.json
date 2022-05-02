@@ -1,6 +1,6 @@
 {
   "name": "@swyg/corre",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "🏃‍♂️ Declaratively control how and when your code is executed. Hooks for setTimeout, setInterval, rAF and more!",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
