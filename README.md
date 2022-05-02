@@ -19,15 +19,28 @@ Installation
 Usage
 -----
 
-**Functions:**
+### `useTimeout(...)`
 
 - `useTimeout(callback: EffectCallback, delay: number | null, deps: React.DependencyList = []): MutableRefObject<number | null>`
+
+### `useInterval(...)`
+
 - `useInterval(callback: EffectCallback, delay: number | null, deps: React.DependencyList = []): MutableRefObject<number | null>`
+
+### `useRequestAnimationFrame(...)`
+
 - `useRequestAnimationFrame(callback: EffectCallback, isRunning: boolean): MutableRefObject<number | null>`
+
+### `useThrottledCallback(...)`
 - `useThrottledCallback<A extends any[]>(callback: (...args: A) => void, delay: number, deps: DependencyList = [], options: UseThrottledCallbackOptions = {}): (...args: A) => void`
+
+
+### `useThrottledRequestAnimationFrame(...)`
+
 - `useThrottledRequestAnimationFrame(callback: EffectCallback, delay: number | null): [MutableRefObject<number | null>, MutableRefObject<number | null>]`
 
 <br>
+
 
 Attribution / Inspiration
 -------------------------
