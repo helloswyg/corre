@@ -1,66 +1,55 @@
 // import { terser } from 'rollup-plugin-terser'
-import babel from '@rollup/plugin-babel'
+// import { visualizer } from 'rollup-plugin-visualizer';
 import commonjs from '@rollup/plugin-commonjs';
 import dts from 'rollup-plugin-dts'
 import externals from "rollup-plugin-node-externals";
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import resolve from "@rollup/plugin-node-resolve";
-import typescript from 'rollup-plugin-typescript2'
-
-import pkg from "./package.json";
-
-// Extensions handled by babel:
-const EXTENSIONS = [".ts", ".tsx"];
-
-// Exclude dev dependencies:
-const EXTERNAL = [...Object.keys(pkg.devDependencies), /\.s?css$/];
+import typescript from 'rollup-plugin-typescript2';
 
 export default [{
     input: 'src/index.ts',
 
     output: [{            
-        // file: pkg.module,
         dir: "dist/esm",
         sourcemap: true,
         format: "esm",
         preserveModules: true, // Enables treeshaking
+        globals: {
+          react: "React",
+        },
+        exports: "named",
     }, {
-        // file: pkg.main,
         dir: "dist/cjs",
         sourcemap: true,
         format: "cjs",
         preserveModules: true, // Enables treeshaking
+        globals: {
+          react: "React",
+        },
+        exports: "named",
     }],
 
-    // preserveModules: true,
-
     plugins: [
-        peerDepsExternal(), // https://rollupjs.org/guide/en/#peer-dependencies
-        
-        externals({ deps: true }), // TODO: This could replace external: EXTERNAL with peerDeps: true. See https://www.npmjs.com/package/rollup-plugin-node-externals.
-        
-        resolve(), 
+        externals(), // See https://www.npmjs.com/package/rollup-plugin-node-externals.
+
+        resolve({
+            // Warn if some modules are not going to be imported properly (such as the ones added manually to the EXTERNAL array above):
+            modulesOnly: true,
+        }),
         
         commonjs({                
-            exclude: 'node_modules',
+            // exclude: 'node_modules',
             ignoreGlobal: true,
         }),
 
         typescript({ useTsconfigDeclarationDir: true }),
 
-        babel({
-            extensions: EXTENSIONS,  // Compile our TypeScript files
-            babelHelpers: "inline",  // Place babel helper functions in the same file they were used
-            include: EXTENSIONS.map(ext => `src/**/*${ext}`)
-        }),
+        // terser(),
 
-        // terser()
+        // visualizer(),
     ],
-
-    external: EXTERNAL, // https://rollupjs.org/guide/en/#peer-dependencies
 }, {
     input: './dist/types/index.d.ts',
     output: [{ file: './dist/index.d.ts', format: "esm" }],
-    external: EXTERNAL,
     plugins: [dts()],
 }];
