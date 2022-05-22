@@ -26,14 +26,17 @@ function expectIntervalCall(times: number, args?: [Function, number]) {
 
 describe('useInterval()', () => {
     
-    beforeEach(() => {
+    beforeAll(() => {
         jest.useFakeTimers('legacy');
         jest.spyOn(window, 'setInterval');
         jest.spyOn(window, 'clearInterval');
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        // jest.useRealTimers();
+        
+        // jest.resetAllMocks();
+        jest.clearAllMocks();
     });
 
     it('sets and clears the interval', () => {

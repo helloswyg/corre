@@ -63,7 +63,9 @@ export function useThrottledCallback<A extends any[]>(
       timeoutRef.current = window.setTimeout(invoke, Math.max(delay - elapsed, 0));
     }
 
+  // TODO: Add options or makeResponsive to deps. DONE. Add test for this.
+
   // The spread element means passed dependencies can't be statically verified (that's fine):
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [...deps, makeResponsive]);
 }
