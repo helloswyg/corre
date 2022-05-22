@@ -1,6 +1,6 @@
 {
   "name": "@swyg/corre",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "🏃‍♂️ Declaratively control how and when your code is executed. Hooks for setTimeout, setInterval, rAF and more!",
   "keywords": [
     "react",
