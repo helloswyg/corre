@@ -158,5 +158,6 @@ describe.only('useThrottledCallback()', () => {
         expectTimeoutCall(4);
         // expect(clearInterval).toHaveBeenCalledTimes(2);
     });
-    
+
+    // TODO: Add test for `makeResponsive` changing.    
 });
