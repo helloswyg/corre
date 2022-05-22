@@ -26,7 +26,7 @@ function expectIntervalCall(times: number, args?: [Function, number]) {
 
 describe('useThrottledRequestAnimationFrame()', () => {
     
-    beforeEach(() => {
+    beforeAll(() => {
         jest.useFakeTimers('legacy');
         jest.spyOn(window, 'setInterval');
         jest.spyOn(window, 'clearInterval');
@@ -35,7 +35,10 @@ describe('useThrottledRequestAnimationFrame()', () => {
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        // jest.useRealTimers();
+        
+        // jest.resetAllMocks();
+        jest.clearAllMocks();
     });
 
     it('runs if isRunning = true', () => {

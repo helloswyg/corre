@@ -24,16 +24,19 @@ function expectTimeoutCall(times: number, args?: [Function, number]) {
     expect(calls[calls.length - 1]).toMatchObject(args);
 }
 
-describe('useThrottledCallback()', () => {
+describe.only('useThrottledCallback()', () => {
     
-    beforeEach(() => {
+    beforeAll(() => {
         jest.useFakeTimers('legacy');
         jest.spyOn(window, 'setTimeout');
         jest.spyOn(window, 'clearTimeout');
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        // jest.useRealTimers();
+
+        // jest.resetAllMocks();
+        jest.clearAllMocks();
     });
     
     it('runs without makeResponsive option', () => {
@@ -83,15 +86,15 @@ describe('useThrottledCallback()', () => {
         result.current();
 
         // expect(result.current).toHaveBeenCalledTimes(4);  
-        expect(callback).toHaveBeenCalledTimes(1);  
-        expectTimeoutCall(3);
+        expect(callback).toHaveBeenCalledTimes(2);  
+        expectTimeoutCall(2);
         // expect(clearInterval).toHaveBeenCalledTimes(2);
         
         jest.advanceTimersByTime(1000);
 
         // expect(result.current).toHaveBeenCalledTimes(4);  
-        expect(callback).toHaveBeenCalledTimes(2);  
-        expectTimeoutCall(3);
+        expect(callback).toHaveBeenCalledTimes(3);  
+        expectTimeoutCall(2);
         // expect(clearInterval).toHaveBeenCalledTimes(2);
     });
     
@@ -124,20 +127,20 @@ describe('useThrottledCallback()', () => {
         
         // expect(result.current).toHaveBeenCalledTimes(1);  
         expect(callback).toHaveBeenCalledTimes(0);    
-        expectTimeoutCall(1);
+        expectTimeoutCall(1, [expect.any(Function), 0]);
         // expect(clearInterval).toHaveBeenCalledTimes(1);
       
         jest.advanceTimersByTime(1000);
         
         // expect(result.current).toHaveBeenCalledTimes(1);  
         expect(callback).toHaveBeenCalledTimes(1);   
-        expectTimeoutCall(1);
+        expectTimeoutCall(1, [expect.any(Function), 0]);
       
         jest.advanceTimersByTime(1000);
         
         // expect(result.current).toHaveBeenCalledTimes(1);  
         expect(callback).toHaveBeenCalledTimes(1);  
-        expectTimeoutCall(1);
+        expectTimeoutCall(1, [expect.any(Function), 0]);
         
         result.current();
         result.current();

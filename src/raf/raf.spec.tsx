@@ -5,14 +5,17 @@ import { useRequestAnimationFrame, UseRequestAnimationFrameParams, UseRequestAni
 
 describe('useRequestAnimationFrame()', () => {
     
-    beforeEach(() => {
+    beforeAll(() => {
         jest.useFakeTimers('legacy');
         jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: Function) => setTimeout(cb, 1));
         jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);  
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        // jest.useRealTimers();
+        
+        // jest.resetAllMocks();
+        jest.clearAllMocks();
     });
 
     it('runs if isRunning = true', () => {

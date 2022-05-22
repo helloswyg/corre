@@ -26,14 +26,17 @@ function expectTimeoutCall(times: number, args?: [Function, number]) {
 
 describe('useTimeout()', () => {
     
-    beforeEach(() => {
+    beforeAll(() => {
         jest.useFakeTimers('legacy');
         jest.spyOn(window, 'setTimeout');
         jest.spyOn(window, 'clearTimeout');
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        // jest.useRealTimers();
+        
+        // jest.resetAllMocks();
+        jest.clearAllMocks();
     });
     
     it('sets and clears the timeout', () => {
